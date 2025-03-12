@@ -259,8 +259,8 @@ class LuckPluginAdvanced(BasePlugin):
                 "【rp命令帮助】\n"
                 "/rp               查看/生成今天的运势\n"
                 "/rp记录           查看你全部历史运势\n"
-                "/rp删除 today     删除今天运势\n"
-                "/rp删除 all       删除所有运势记录\n"
+                # "/rp删除 today     删除今天运势\n"
+                # "/rp删除 all       删除所有运势记录\n"
                 "/rp排行榜         今日运势排行榜\n"
                 "/rp偷 @某人       偷取对方运势(每日一次)\n"
                 "更多说明可自行扩展~"
@@ -303,23 +303,23 @@ class LuckPluginAdvanced(BasePlugin):
             await ctx.reply(MessageChain([Plain("\n".join(report_lines))]))
             return
 
-        # --- /rp删除: 删除记录 ---
-        if cmd == "rp删除":
-            if arg == "today":
-                success = delete_today_luck(user_id)
-                if success:
-                    await ctx.reply(MessageChain([Plain("已删除你今天的运势记录")]))
-                else:
-                    await ctx.reply(MessageChain([Plain("你今天还没有运势记录，无需删除")]))
-                return
-            elif arg == "all":
-                count = delete_all_luck(user_id)
-                await ctx.reply(MessageChain([Plain(f"已删除你全部 {count} 条运势记录")]))
-                return
-            else:
-                tip = "用法：\n/rp删除 today  （删除今天的运势）\n/rp删除 all    （删除全部运势）"
-                await ctx.reply(MessageChain([Plain(tip)]))
-                return
+        # # --- /rp删除: 删除记录 ---
+        # if cmd == "rp删除":
+        #     if arg == "today":
+        #         success = delete_today_luck(user_id)
+        #         if success:
+        #             await ctx.reply(MessageChain([Plain("已删除你今天的运势记录")]))
+        #         else:
+        #             await ctx.reply(MessageChain([Plain("你今天还没有运势记录，无需删除")]))
+        #         return
+        #     elif arg == "all":
+        #         count = delete_all_luck(user_id)
+        #         await ctx.reply(MessageChain([Plain(f"已删除你全部 {count} 条运势记录")]))
+        #         return
+        #     else:
+        #         tip = "用法：\n/rp删除 today  （删除今天的运势）\n/rp删除 all    （删除全部运势）"
+        #         await ctx.reply(MessageChain([Plain(tip)]))
+        #         return
 
         # --- /rp排行榜: 今日最高 ---
         if cmd == "rp排行榜":
