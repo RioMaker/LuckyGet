@@ -225,7 +225,7 @@ def update_luck_value(user_id: str, date_str: str, new_value: int):
     name="LuckPluginAdvanced",
     description="测试运势的插件(进阶版)：带吉凶签、幸运色、宜忌、排行榜、偷取等功能。",
     version="2.0",
-    author="YourName"
+    author="Rio"
 )
 class LuckPluginAdvanced(BasePlugin):
 
