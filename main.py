@@ -16,11 +16,86 @@ DB_PATH = os.path.join(BASE_DIR, "luck_records_advanced.db")
 
 # ==== 一些可自定义的随机素材 ====
 FORTUNE_TEXTS = ["大吉", "小吉", "吉", "末吉", "凶", "大凶"]
-COLORS = ["红色", "蓝色", "绿色", "紫色", "白色", "黑色", 
-          "灰色", "粉色", "金色", "黄色", "橙色", "青色", 
-          "银色", "棕色"]
-ADVICE_DO = ["出门逛街", "加班学习", "打扫卫生", "看书充电", "给喜欢的人表白", "搞副业"]
-ADVICE_DONT = ["熬夜", "和人吵架", "冲动消费", "吃太多甜食", "迟到", "赖床"]
+COLORS = [
+    "红色",
+    "蓝色",
+    "绿色",
+    "紫色",
+    "白色",
+    "黑色",
+    "灰色",
+    "粉色",
+    "金色",
+    "黄色",
+    "橙色",
+    "青色",
+    "银色",
+    "棕色",
+    "透明色",
+    "彩虹色",
+    "铁锈色",
+    "铜绿色",
+    "靛蓝色",
+    "翠绿色",
+    "橄榄色",
+    "茶色",
+    "杏色",
+    "铅灰色",
+    "赤色",
+    "雨色",
+    "雪色",
+    "霞色",
+    "霜色",
+    "霁色",
+    "霰色",
+    "霓色",
+    "霪色",
+    "霭色",
+    "露色",
+    "霹雳色",
+    "霾色",
+    "靥色",
+    "青莲色",
+    "青缥色",
+    "青白色",
+    "五彩斑斓的黑色",
+    "五彩斑斓的白色",
+    "五彩斑斓的透明色",
+]
+ADVICE_DO = [
+    "出门逛街",
+    "加班学习",
+    "打扫卫生",
+    "看书充电",
+    "给喜欢的人表白",
+    "搞副业",
+    "出门逛街时顺便去游戏厅打太鼓达人",
+    "加班学习后用太鼓达人来放松一下",
+    "打扫卫生完毕后再来一曲太鼓达人减压",
+    "看书充电之余练习太鼓达人提高节奏感",
+    "给喜欢的人表白前一起玩太鼓达人增进感情",
+    "搞副业的间隙打打太鼓达人激发灵感",
+    "考段",
+    "越级",
+]
+ADVICE_DONT = [
+    "熬夜",
+    "和人吵架",
+    "冲动消费",
+    "吃太多甜食",
+    "迟到",
+    "赖床",
+    "深夜不戴耳机在家猛敲太鼓达人扰民",
+    "为冲高分通宵达旦地敲太鼓达人损害身体",
+    "在公共场所外放音量狂热打太鼓达人",
+    "为攒金币砸钱抽太鼓达人周边买到吃土",
+    "沉迷太鼓达人导致工作或学习荒废",
+    "刚练手就直接开高难度谱面伤鼓又伤心",
+    "考段",
+    "越级",
+    "熬夜打太鼓达人",
+]
+
 
 def init_db():
     """
@@ -29,7 +104,8 @@ def init_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     # 主表：存储每日运势
-    c.execute('''
+    c.execute(
+        """
         CREATE TABLE IF NOT EXISTS luck_records (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id TEXT NOT NULL,
@@ -40,18 +116,22 @@ def init_db():
             advice_do TEXT NOT NULL,     -- 今日宜
             advice_dont TEXT NOT NULL    -- 今日忌
         )
-    ''')
+    """
+    )
     # 记录偷取运势事件，防止一天多次偷
-    c.execute('''
+    c.execute(
+        """
         CREATE TABLE IF NOT EXISTS luck_steals (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             stealer_id TEXT NOT NULL,   -- 偷运势的人
             target_id TEXT NOT NULL,    -- 被偷的人
             date TEXT NOT NULL          -- YYYY-MM-DD
         )
-    ''')
+    """
+    )
     conn.commit()
     conn.close()
+
 
 def get_today_record(user_id: str):
     """
@@ -61,11 +141,14 @@ def get_today_record(user_id: str):
     today_str = datetime.now(china_tz).strftime("%Y-%m-%d")
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute('''
+    c.execute(
+        """
         SELECT id, luck_value, fortune_text, color, advice_do, advice_dont 
         FROM luck_records
         WHERE user_id = ? AND date = ?
-    ''', (user_id, today_str))
+    """,
+        (user_id, today_str),
+    )
     row = c.fetchone()
     conn.close()
     if row:
@@ -80,6 +163,7 @@ def get_today_record(user_id: str):
         }
     return None
 
+
 def create_today_record(user_id: str):
     """
     为用户在当天创建一条新的运势记录，并返回生成的数据。
@@ -93,10 +177,21 @@ def create_today_record(user_id: str):
 
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute('''
+    c.execute(
+        """
         INSERT INTO luck_records (user_id, date, luck_value, fortune_text, color, advice_do, advice_dont)
         VALUES (?, ?, ?, ?, ?, ?, ?)
-    ''', (user_id, today_str, luck_value, fortune_text, color, advice_do_str, advice_dont_str))
+    """,
+        (
+            user_id,
+            today_str,
+            luck_value,
+            fortune_text,
+            color,
+            advice_do_str,
+            advice_dont_str,
+        ),
+    )
     conn.commit()
     conn.close()
 
@@ -105,8 +200,9 @@ def create_today_record(user_id: str):
         "fortune_text": fortune_text,
         "color": color,
         "advice_do": advice_do_str,
-        "advice_dont": advice_dont_str
+        "advice_dont": advice_dont_str,
     }
+
 
 def get_all_luck_records(user_id: str):
     """
@@ -115,15 +211,19 @@ def get_all_luck_records(user_id: str):
     """
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute('''
+    c.execute(
+        """
         SELECT date, luck_value, fortune_text, color, advice_do, advice_dont
         FROM luck_records
         WHERE user_id = ?
         ORDER BY date DESC
-    ''', (user_id,))
+    """,
+        (user_id,),
+    )
     rows = c.fetchall()
     conn.close()
     return rows
+
 
 def delete_today_luck(user_id: str) -> bool:
     """
@@ -132,14 +232,18 @@ def delete_today_luck(user_id: str) -> bool:
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     today_str = datetime.now(china_tz).strftime("%Y-%m-%d")
-    c.execute('''
+    c.execute(
+        """
         DELETE FROM luck_records
         WHERE user_id = ? AND date = ?
-    ''', (user_id, today_str))
+    """,
+        (user_id, today_str),
+    )
     rowcount = c.rowcount
     conn.commit()
     conn.close()
     return rowcount > 0
+
 
 def delete_all_luck(user_id: str) -> int:
     """
@@ -147,14 +251,18 @@ def delete_all_luck(user_id: str) -> int:
     """
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute('''
+    c.execute(
+        """
         DELETE FROM luck_records
         WHERE user_id = ?
-    ''', (user_id,))
+    """,
+        (user_id,),
+    )
     rowcount = c.rowcount
     conn.commit()
     conn.close()
     return rowcount
+
 
 def get_today_rank():
     """
@@ -164,15 +272,19 @@ def get_today_rank():
     today_str = datetime.now(china_tz).strftime("%Y-%m-%d")
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute('''
+    c.execute(
+        """
         SELECT user_id, luck_value, fortune_text, color, advice_do, advice_dont
         FROM luck_records
         WHERE date = ?
         ORDER BY luck_value DESC
-    ''', (today_str,))
+    """,
+        (today_str,),
+    )
     rows = c.fetchall()
     conn.close()
     return rows
+
 
 def has_stolen_today(stealer_id: str):
     """
@@ -181,13 +293,17 @@ def has_stolen_today(stealer_id: str):
     today_str = datetime.now(china_tz).strftime("%Y-%m-%d")
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute('''
+    c.execute(
+        """
         SELECT 1 FROM luck_steals
         WHERE stealer_id = ? AND date = ?
-    ''', (stealer_id, today_str))
+    """,
+        (stealer_id, today_str),
+    )
     row = c.fetchone()
     conn.close()
     return row is not None
+
 
 def record_steal(stealer_id: str, target_id: str):
     """
@@ -196,12 +312,16 @@ def record_steal(stealer_id: str, target_id: str):
     today_str = datetime.now(china_tz).strftime("%Y-%m-%d")
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute('''
+    c.execute(
+        """
         INSERT INTO luck_steals (stealer_id, target_id, date)
         VALUES (?, ?, ?)
-    ''', (stealer_id, target_id, today_str))
+    """,
+        (stealer_id, target_id, today_str),
+    )
     conn.commit()
     conn.close()
+
 
 def update_luck_value(user_id: str, date_str: str, new_value: int):
     """
@@ -213,19 +333,23 @@ def update_luck_value(user_id: str, date_str: str, new_value: int):
         new_value = 100
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute('''
+    c.execute(
+        """
         UPDATE luck_records
         SET luck_value = ?
         WHERE user_id = ? AND date = ?
-    ''', (new_value, user_id, date_str))
+    """,
+        (new_value, user_id, date_str),
+    )
     conn.commit()
     conn.close()
+
 
 @register(
     name="LuckPluginAdvanced",
     description="测试运势的插件(进阶版)：带吉凶签、幸运色、宜忌、排行榜、偷取等功能。",
-    version="2.1",
-    author="Rio"
+    version="2.2",
+    author="Rio",
 )
 class LuckPluginAdvanced(BasePlugin):
 
@@ -277,8 +401,26 @@ class LuckPluginAdvanced(BasePlugin):
             else:
                 # 已有记录，直接返回
                 data = record
-
+            val_score = "  "
+            if data['luck_value']>99:
+                val_score = "極"
+            elif data['luck_value']>94:
+                val_score = "紫雅"
+            elif data['luck_value']>89:
+                val_score = "粉雅"
+            elif data['luck_value']>79:
+                val_score = "金雅"
+            elif data['luck_value']>69:
+                val_score = "银粋"
+            elif data['luck_value']>59:
+                val_score = "铜粋"
+            elif data['luck_value']>49:
+                val_score = "白粋"
+            else:
+                val_score = "  "
             reply_msg = (
+                f"【今日运势】\n"
+                f"《{val_score}》\n"
                 f"今日人品（RP）值：{data['luck_value']}\n"
                 f"今日签：{data['fortune_text']}\n"
                 f"幸运色：{data['color']}\n"
@@ -366,24 +508,32 @@ class LuckPluginAdvanced(BasePlugin):
             # 看看自己今天有没有运势
             self_record = get_today_record(user_id)
             if not self_record:
-                await ctx.reply(MessageChain([Plain("你今天还没有运势，先用 /rp 抽取吧！")]))
+                await ctx.reply(
+                    MessageChain([Plain("你今天还没有运势，先用 /rp 抽取吧！")])
+                )
                 return
 
             # 看看对方今天有没有运势
             target_record = get_today_record(target_id)
             if not target_record:
-                await ctx.reply(MessageChain([Plain("对方今天还没抽运势，暂时偷不到任何东西~")]))
+                await ctx.reply(
+                    MessageChain([Plain("对方今天还没抽运势，暂时偷不到任何东西~")])
+                )
                 return
 
             # 检查自己今天是否偷过
             if has_stolen_today(user_id):
-                await ctx.reply(MessageChain([Plain("你今天已经偷过别人了，每日只能偷一次~")]))
+                await ctx.reply(
+                    MessageChain([Plain("你今天已经偷过别人了，每日只能偷一次~")])
+                )
                 return
 
             # 开始偷运势：比如随机 1~10
             steal_amount = random.randint(1, 10)
             if target_record["luck_value"] <= 0:
-                await ctx.reply(MessageChain([Plain("对方的运势已经见底，偷不到什么了…")]))
+                await ctx.reply(
+                    MessageChain([Plain("对方的运势已经见底，偷不到什么了…")])
+                )
                 return
 
             final_steal = min(steal_amount, target_record["luck_value"])
